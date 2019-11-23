@@ -64,11 +64,20 @@ export default{
     data: function() {
         return {
             backgroundColor: 'primary',
-            isAdmin: false
+            isAdmin: false,
         }
     },
     created: function() {
-        this.isAdmin = localStorage.getItem("power");
+        var self = this;
+        this.$axios.post('http://' + window.config.Host + '/admin/checkPower', {
+            id: localStorage.getItem('_id'),
+        }).then(function(res) {
+            if(res.data.status == 1) {
+                self.$Message.error(res.data.message);
+            } else {
+                self.isAdmin = res.data.data;
+            }
+        })
     },
     methods: {
         skipBackend: function() {

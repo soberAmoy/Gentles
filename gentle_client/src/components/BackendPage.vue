@@ -82,6 +82,10 @@
                                 </Row>
                             </FormItem>
                             <FormItem>
+                                <Row style="margin-left: -25%; margin-bottom: 15px;">
+                                    <span style="margin-right: 5%;">版本号</span>
+                                    <Input style="width: 170px;" v-model="vision"></Input>
+                                </Row>
                                 <Button type="primary" @click="handleSubmit('formDynamic')">推送</Button>
                                 <Button @click="handleReset('formDynamic')" style="margin-left: 8px">重置</Button>
                             </FormItem>
@@ -99,6 +103,7 @@ import TopBanner from './TopBanner.vue'
 export default{
     data: function() {
         return {
+            vision: "", //版本号
             personName: "",
             topic: "",
             finishDate: "",
@@ -299,13 +304,21 @@ export default{
                 }
             })
         },
-        handleSubmit (name) {
-            this.$refs[name].validate((valid) => {
-                if (valid) {
-                    this.$Message.success('Success!');
-                } else {
-                    this.$Message.error('Fail!');
+        handleSubmit () {
+            var self = this;
+            this.formDynamic.items.push(this.vision);
+            this.$axios.post('http://' + window.config.Host + '/admin/postUpdateContent', {
+                updateData: self.formDynamic.items,
+            }).then(function(res) {
+                if(res.data.status == 1) {
+                    self.$Message.error(res.data.message);
                 }
+                self.$Message.success(res.data.message);
+                self.formDynamic.items = {
+                        value: '',
+                        index: 1,
+                        status: 1
+                    };
             })
         },
         handleReset (name) {

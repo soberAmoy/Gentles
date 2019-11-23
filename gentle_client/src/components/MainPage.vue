@@ -7,11 +7,11 @@
                 <h1>SPEECH BOARD</h1>
             </div>
             <div class="info">
-                <span class="speechTime">Date：{{speechTime}}</span><br><br>
-                <span class="topic">Topic：{{topic}}</span><br><br>
-                <span class="speaker">Talker：{{speaker}}</span>
+                <span class="speechTime">日期：<span style="font-weight: bolder;">{{speechTime}}</span></span><br><br>
+                <span class="topic">分享主题：<span style="font-weight: bolder;">{{topic}}</span></span><br><br>
+                <span class="speaker">主讲人：<span style="font-weight: bolder;">{{speaker}}</span></span>
             </div>
-            <div class="order" @click="showOrderList">点击查看本轮演讲顺序</div>
+            <div class="order" @click="showModal = true;">点击查看本轮演讲顺序</div>
             <Modal
                 v-model="showModal"
                 title="本轮演讲顺序展示">
@@ -19,9 +19,13 @@
             </Modal>
         </div>
         <div class="updateBox">
-            <h1>新分享，新体会</h1>
-            <h2>Gentle{{vision}}更新内容:</h2>
-            <div>{{updateContent}}</div>
+            <h1>平台最新动态</h1>
+            <h2>Gentle{{updateInfo._v}}更新内容:</h2>
+            <ul class="showBox_right">
+                <li v-for="item in updateInfo.content">
+                    {{item.index}}、 {{item.value}}
+                </li>
+            </ul>
         </div>
     </div>
 </div>
@@ -38,6 +42,7 @@ export default {
             vision: "1.0",
             updateContent: "1233333",
             showModal: false,
+            updateInfo: [],
             orderInfo: [],
             orderListHeader: [{
                 title: '用户名',
@@ -61,20 +66,34 @@ export default {
     components: {
         TopBanner,
     },
+    created: function() {
+        var self = this;
+        this.$axios.get('http://' + 'localhost:3000' + '/admin/getUpdateContent')
+            .then(function(res) {
+                self.updateInfo = res.data.data;
+            })
+        this.showOrderList();
+    },
     methods: {
         showOrderList: function() {
             var self = this;
-            this.showModal = true;
-            this.$axios.get('http://' + window.config.Host + '/admin/getOrder')
+            this.$axios.get('http://' + 'localhost:3000' + '/admin/getOrder')
             .then(function(res) {
                 if(res.data.status == 1) {
                     self.$Message.err(res.data.message);
                 } else {
                     var data = res.data.data.order[0].order;
                     var len = data.length;
+                    var flag = true;
                     for(var i = 0; i < len; i++) {
                         data[i].finished = data[i].finished == true ? '已结束' : '未开始';
                         data[i].speechTime = data[i].speechTime != "" ? data[i].speechTime.substring(0, 10) : '暂无';
+                        if(data[i].finished == '未开始' && flag) {
+                            self.speechTime = data[i].speechTime;
+                            self.topic = data[i].speechTopic != "" ? data[i].speechTopic : '未定';
+                            self.speaker = data[i].name;
+                            flag = false;
+                        }
                     }
                     self.orderInfo = data;
                 }
@@ -156,13 +175,17 @@ export default {
     margin-top: 10px;
     margin-left: 20px;
 }
-.container .updateBox div{
+.container .updateBox .showBox_right{
     position: relative;
-    left: 15%;
+    left: 30%;
     top: 6%;
-    width: 340px;
+    width: 300px;
     height: 150px;
-    border: 1px solid #ccc;
+    font-size: 16px;
+    text-align: justify;
+    text-justify: newspaper;
+    word-break: break-all;
 }
+
 </style>
 

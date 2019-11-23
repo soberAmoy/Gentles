@@ -2,11 +2,22 @@ var express = require('express');
 var user = require('../models/user.js');
 var order = require('../models/order.js');
 var record = require('../models/record.js');
+var vision = require('../models/vision.js');
 var router = express.Router();
 
 router.get('/admin', function(req, res, next) {
   res.send('respond with a resource');
 });
+
+//判断用户权限
+router.post('/checkPower', function(req, res, next) {
+    if(!req.body.id) {
+        res.json({status: 1, message: '验证对象id不能为空！'});
+    }
+    user.findById({_id: req.body.id}, function(err, findUser) {
+        res.json({status: 0, data: findUser[0].userAdmin});
+    })
+})
 
 //获取所有用户列表
 router.get('/getUserList', function(req, res, next) {
@@ -118,10 +129,43 @@ router.post('/modifySpeechState', function(req, res, next) {
             record.update({_id: record_id}, {order: data}, function(err, updateResult) {
                 if(err) {
                     res.json({status: 1, message: '更新失败！'});
+                } else {
+                    res.json({status: 0, message: '更新成功！', data: updateResult});
                 }
-                res.json({status: 0, message: '更新成功！', data: updateResult});
             })
         }
+    })
+})
+
+//存储平台更新内容
+router.post('/postUpdateContent', function(req, res, next) {
+    try{
+        if(!req.body.updateData){
+            res.json({status: 1, message: '更新内容不能为空！'});
+        }
+        var visionNums = req.body.updateData.pop();
+        var visionModel = new vision({
+            _v: visionNums,
+            content: req.body.updateData,
+            date: Date.now().toString().substring(0, 10),
+        });
+        visionModel.save(function(err) {
+            if(err) {
+                res.json({status: 1, message: '存储失败！', data: err});
+            }
+            res.json({status: 0, message: '发布成功！'});
+        })
+    }
+    catch(e){
+        console.log(e);
+    }
+})
+
+//获取更新内容
+router.get('/getUpdateContent', function(req, res, next) {
+    vision.findAll(function(err, findResult) {
+        console.log(findResult);
+        res.json({status: 0 , data: findResult[0]});
     })
 })
 

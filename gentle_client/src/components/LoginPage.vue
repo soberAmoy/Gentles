@@ -56,7 +56,6 @@ export default {
                     localStorage.setItem('token', res.data.data.token);
                     localStorage.setItem('username', res.data.data.user[0].username);
                     localStorage.setItem('_id', res.data.data.user[0]._id);
-                    localStorage.setItem('power', res.data.data.user[0].userAdmin);
                     self.$router.push('/home');
                 }
             })
