@@ -36,18 +36,12 @@
                     <MenuItem name="3-3">演讲视频</MenuItem>
                 </MenuGroup>
             </Submenu>
-            <Submenu name="4" class="menuItem">
-                <template slot="title">
-                    <span class="iconText">
-                        <Icon type="ios-body-outline" />
-                        会员中心
-                    </span>
-                </template>
-                <MenuGroup title="使用">
-                    <MenuItem name="4-1">个人模块</MenuItem>
-                    <MenuItem name="4-2">idea记录</MenuItem>
-                </MenuGroup>
-            </Submenu>
+            <MenuItem name="4" class="menuItem">
+                <span class="iconText" @click="skipCenter">
+                    <Icon type="ios-body-outline" />
+                    会员中心
+                </span>
+            </MenuItem>
             <MenuItem name="5" class="menuItem" v-if="isAdmin">
                 <span class="iconText" @click="skipBackend">
                     <Icon type="ios-stats" />
@@ -85,6 +79,9 @@ export default{
         },
         skipHome: function() {
             this.$router.push('/home');
+        },
+        skipCenter: function() {
+            this.$router.push('/MemberCenter');
         },
         clearInfo: function() {
             localStorage.clear();
