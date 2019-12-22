@@ -11,7 +11,12 @@
                 <span class="topic">分享主题：<span style="font-weight: bolder;">{{topic}}</span></span><br><br>
                 <span class="speaker">主讲人：<span style="font-weight: bolder;">{{speaker}}</span></span>
             </div>
-            <div class="order" @click="showModal = true;">点击查看本轮演讲顺序</div>
+			<Modal
+                v-model="modal1"
+                title="本轮演讲顺序展示">
+                <Table stripe :columns="orderListHeader" :data="orderInfo"></Table>
+            </Modal>
+            <Button size="small" class="order" @click="modal1 = true">点击查看本轮演讲顺序</Button>
             <Modal
                 v-model="showModal"
                 title="本轮演讲顺序展示">
@@ -41,7 +46,8 @@ export default {
             speaker: "",
             vision: "1.0",
             updateContent: "1233333",
-            showModal: false,
+            showModal: true,
+			modal1: false,
             updateInfo: [],
             orderInfo: [],
             orderListHeader: [{
@@ -82,7 +88,7 @@ export default {
                 if(res.data.status == 1) {
                     self.$Message.err(res.data.message);
                 } else {
-                    var data = res.data.data.order[0].order;
+                    var data = res.data.data.order;
                     var len = data.length;
                     var flag = true;
                     for(var i = 0; i < len; i++) {
@@ -98,8 +104,13 @@ export default {
                     self.orderInfo = data;
                 }
             })
-        }
-    }
+        },
+		showDialog: function(){
+			console.log('当前：' + this.showModal);
+			this.showModal = true;
+			console.log('调用后：' + this.showModal);
+		}
+    },
 }
 </script>
 <style scoped>

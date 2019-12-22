@@ -235,7 +235,7 @@ export default{
                 if(res.data.status == 1) {
                     self.$Message.err(res.data.message);
                 } else {
-                    var data = res.data.data.order[0].order;
+                    var data = res.data.data.order;
                     var len = data.length;
                     for(var i = 0; i < len; i++) {
                         data[i].finished = data[i].finished == true ? '已结束' : '未开始';
