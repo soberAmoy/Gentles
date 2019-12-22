@@ -11,15 +11,11 @@
                 <span class="topic">分享主题：<span style="font-weight: bolder;">{{topic}}</span></span><br><br>
                 <span class="speaker">主讲人：<span style="font-weight: bolder;">{{speaker}}</span></span>
             </div>
-			<Modal
-                v-model="modal1"
-                title="本轮演讲顺序展示">
-                <Table stripe :columns="orderListHeader" :data="orderInfo"></Table>
-            </Modal>
-            <Button size="small" class="order" @click="modal1 = true">点击查看本轮演讲顺序</Button>
             <Modal
                 v-model="showModal"
-                title="本轮演讲顺序展示">
+                title="本轮演讲顺序展示"
+                ok-text="我知道了"
+                cancel-text="">
                 <Table stripe :columns="orderListHeader" :data="orderInfo"></Table>
             </Modal>
         </div>
@@ -46,8 +42,7 @@ export default {
             speaker: "",
             vision: "1.0",
             updateContent: "1233333",
-            showModal: true,
-			modal1: false,
+            showModal: false,
             updateInfo: [],
             orderInfo: [],
             orderListHeader: [{
@@ -74,7 +69,7 @@ export default {
     },
     created: function() {
         var self = this;
-        this.$axios.get('http://' + 'localhost:3000' + '/admin/getUpdateContent')
+        this.$axios.get('http://' + window.config.Host + '/admin/getUpdateContent')
             .then(function(res) {
                 self.updateInfo = res.data.data;
             })
@@ -83,12 +78,13 @@ export default {
     methods: {
         showOrderList: function() {
             var self = this;
-            this.$axios.get('http://' + 'localhost:3000' + '/admin/getOrder')
+            this.$axios.get('http://' + window.config.Host + '/admin/getOrder')
             .then(function(res) {
                 if(res.data.status == 1) {
                     self.$Message.err(res.data.message);
                 } else {
                     var data = res.data.data.order;
+                    console.log(data);
                     var len = data.length;
                     var flag = true;
                     for(var i = 0; i < len; i++) {
@@ -102,14 +98,10 @@ export default {
                         }
                     }
                     self.orderInfo = data;
+                    self.showModal = true;
                 }
             })
-        },
-		showDialog: function(){
-			console.log('当前：' + this.showModal);
-			this.showModal = true;
-			console.log('调用后：' + this.showModal);
-		}
+        }
     },
 }
 </script>
@@ -155,16 +147,6 @@ export default {
 }
 .container .infoShowBox .info span{
     font-size: 25px;
-}
-.container .infoShowBox .order{
-    position: absolute;
-    bottom: 13%;
-    left: 14.5%;
-    font-size: 13px;
-}
-.container .infoShowBox .order:hover{
-    cursor: pointer;
-    color: #000;
 }
 .container .updateBox{
     position: absolute;

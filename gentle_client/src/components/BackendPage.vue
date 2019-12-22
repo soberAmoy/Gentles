@@ -242,6 +242,7 @@ export default{
                         data[i].speechTime = data[i].speechTime != "" ? data[i].speechTime.substring(0, 10) : '暂无';
                     }
                     self.orderInfo = data;
+                    console.log(data);
                 }
             })
         },

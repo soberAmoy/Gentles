@@ -164,7 +164,6 @@ router.post('/postUpdateContent', function(req, res, next) {
 //获取更新内容
 router.get('/getUpdateContent', function(req, res, next) {
     vision.findAll(function(err, findResult) {
-        console.log(findResult);
         res.json({status: 0 , data: findResult[0]});
     })
 })
